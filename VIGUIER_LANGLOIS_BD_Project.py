@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[9]:
-
-
 def get_jobs(city, money, tech):
     if tech == 'c#':
         tech = 'c%23'
@@ -29,9 +23,13 @@ def create_tree(xml_file):
     desc_list = []
     pubdate_list = []
     location_list = []
-    global category, link, name, title, desc, pubdate, location
+    global category, link, name, title, desc, pubdate, location, num_node, num
     
     for node in parsed_xml:
+        namespace_r = {'os': 'http://a9.com/-/spec/opensearch/1.1/'}
+        num_node = node.find('os:totalResults', namespace_r)
+        num = get_node(num_node)
+        
         for x in node.findall('item'):
             namespace = {'a10': 'http://www.w3.org/2005/Atom'}
             link = x.find('link')
@@ -41,6 +39,7 @@ def create_tree(xml_file):
             desc = x.find('description')
             pubdate = x.find('pubDate')
             location = x.find('{http://stackoverflow.com/jobs/}location')
+            
         for i in range(0, len(category)):  
             category_list.append(get_node(category[i]))
         link_list.append(get_node(link))
@@ -49,12 +48,15 @@ def create_tree(xml_file):
         desc_list.append(get_node(desc))
         pubdate_list.append(get_node(pubdate))
         location_list.append(get_node(location))
-    print('Techs used: '+str(category_list))
-    print('Company: '+str(name_list))
-    print('Title: '+str(title_list))
-    print('Description: '+str(link_list))
-    print('Published date: '+str(pubdate_list))
-    print('Location: '+str(location_list))
+    if(int(num) > 0):
+        print('Techno utilisees: '+str(category_list))
+        print('Entreprise: '+str(name_list))
+        print('Intitule: '+str(title_list))
+        print('Description: '+str(link_list))
+        print('Date de publication: '+str(pubdate_list))
+        print('Lieu: '+str(location_list))
+    else:
+        print('Aucun resultat disponible pour cette ville/technologie')
     
     
 def get_node(n):
@@ -75,7 +77,7 @@ def orgnz_weather_data(data):
     return n_data
                 
 def print_weather_data(n_data):
-    print('***********************************')
+    print('*********************************')
     print('Ville: {}'.format(n_data['city']))
     print('Pays: {}'.format(n_data['country']))
     print('Temperature actuelle: {}'.format(n_data['main_temp'])+'\xb0'+'C')
@@ -91,7 +93,7 @@ import xml.etree.ElementTree as et
 
 global s
 fav_techs = []
-cities = ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Rennes', 'Reims', 'Lille', 'Toulon', 'Grenoble', 'Angers', 'Dijon', 'Brest']
+cities = ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Reims', 'Lille']
 techs = ['javascript', 'sql', 'java', 'c#', 'python', 'php', 'c++', 'c', 'typescript', 'ruby', 'swift']
 for z in range(0, 11):
     print(techs[z])
@@ -111,4 +113,3 @@ for c in cities:
     print_weather_data(orgnz_weather_data(get_weather(c)))
     for d in fav_techs:
         create_tree(get_jobs(c, s, d))
-
